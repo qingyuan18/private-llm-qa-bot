@@ -236,10 +236,15 @@ def get_vector_by_sm_endpoint(questions, sm_client, endpoint_name):
     return embeddings
 
 def aos_knn_search_v2(client, field,q_embedding, index, size=1):
+    credentials = Session().get_credentials()
+    region = Session().region_name
+    awsauth = AWS4Auth(credentials.access_key,
+                           credentials.secret_key, region, 'es',
+                           session_token=credentials.token)
     if not isinstance(client, OpenSearch):
         client = OpenSearch(
             hosts=[{'host': aos_endpoint, 'port': 443}],
-            http_auth = auth,
+            http_auth = awsauth,
             use_ssl=True,
             verify_certs=True,
             connection_class=RequestsHttpConnection
