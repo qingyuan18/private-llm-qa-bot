@@ -235,14 +235,13 @@ def get_vector_by_sm_endpoint(questions, sm_client, endpoint_name):
     embeddings = json_obj['sentence_embeddings']
     return embeddings
 
-def aos_knn_search_v2(client, field,q_embedding, index, size=1):
+def aos_knn_search_v2(aos_endpoint, field,q_embedding, index, size=1):
     credentials = Session().get_credentials()
     region = Session().region_name
     awsauth = AWS4Auth(credentials.access_key,
                            credentials.secret_key, region, 'es',
                            session_token=credentials.token)
-    if not isinstance(client, OpenSearch):
-        client = OpenSearch(
+    client = OpenSearch(
             hosts=[{'host': aos_endpoint, 'port': 443}],
             http_auth = awsauth,
             use_ssl=True,
@@ -270,8 +269,7 @@ def aos_knn_search_v2(client, field,q_embedding, index, size=1):
 
 def query_aos_knn_db_table(query,aos_endpoint,embedding_endpoint):
     query_embedding = get_vector_by_sm_endpoint(query, sm_client, embedding_endpoint_name)
-    aos_client=None
-    opensearch_query_response = aos_knn_search_v2(aos_client, "exactly_query_embedding",query_embedding[0], index_name, size=10)
+    opensearch_query_response = aos_knn_search_v2(aos_endpoint, "exactly_query_embedding",query_embedding[0], index_name, size=10)
     try:
         response = opensearch_query_response[0]
     except Exception as e:
