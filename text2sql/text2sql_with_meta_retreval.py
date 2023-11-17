@@ -288,6 +288,7 @@ SQL <<<
 <<<
 
 <元数据>
+数据库名：{DATABASE_NAME}
 {TABLE_INFO}
 </元数据>
 
@@ -300,6 +301,7 @@ SQL <<<
 生成的SQL中要用'as'给出用反引号（‘)包围的中文别名。
 如无法生成 SQL，返回 ERROR。
 生成的SQL中字段名前面不要给出表名。
+生成的SQL中表名前要加上数据库名。
 
 问题：
 {QUESTION}
@@ -345,7 +347,8 @@ def lambda_handler(event, context):
     complete_prompt = prompt_template_v2.format(
         TABLE_INFO=table_info,
         QUESTION=question,
-        CONTEXT=context
+        CONTEXT=context,
+        DATABASE_NAME = database_name
     )
     print(complete_prompt)
 
