@@ -19,13 +19,10 @@ def handle_error(func):
             return func(*args, **kwargs)
         except Exception as err:
             logger.exception(err)
-            # raise RuntimeError(
-            #     "Unknown exception, please check Lambda log for more details"
-            # )
             return json.dumps({
-                'code': 500,
-                'message': 'Unknown exception, please check Lambda log for more details',
-                'data': ''
+                'Code': 500,
+                'Message': 'Unknown exception, please check Lambda log for more details',
+                'Data': ''
             })
 
     return wrapper
@@ -59,27 +56,27 @@ def lambda_handler(event, context):
     model_name = request_body['model']
     max_tokens = int(request_body.get('max_tokens', 2048))
     temperature = float(request_body.get('temperature', 0.1))
-    top_p = request_body.get('top_p', 0.95)
+    top_p = float(request_body.get('top_p', 0.95))
 
     # 1.2 Retrieve from environment
     aos_endpoint = os.environ.get('aos_endpoint', '')
     aos_index = os.environ.get('aos_index', '')
 
-    region = os.environ.get('region', '')
-    bedrock_region = os.environ.get('bedrock_region', '')
+    bedrock_runtime_region = os.environ.get('bedrock_runtime_region', '')
     bedrock_aksk_region = os.environ.get('bedrock_aksk_region', '')
+    bedrock_secret_name = os.environ.get('bedrock_secret_name', '')
 
     logger.info('#' * 50)
-    logger.info(f'query               :{query}')
-    logger.info(f'model_name          :{model_name}')
-    logger.info(f'max_tokens          :{max_tokens}')
-    logger.info(f'temperature         :{temperature}')
-    logger.info(f'top_p               :{top_p}')
-    logger.info(f'aos_endpoint        :{aos_endpoint}')
-    logger.info(f'aos_index           :{aos_index}')
-    logger.info(f'region              :{region}')
-    logger.info(f'bedrock_region      :{bedrock_region}')
-    logger.info(f'bedrock_aksk_region :{bedrock_aksk_region}')
+    logger.info(f'query                  :{query}')
+    logger.info(f'model_name             :{model_name}')
+    logger.info(f'max_tokens             :{max_tokens}')
+    logger.info(f'temperature            :{temperature}')
+    logger.info(f'top_p                  :{top_p}')
+    logger.info(f'aos_endpoint           :{aos_endpoint}')
+    logger.info(f'aos_index              :{aos_index}')
+    logger.info(f'bedrock_runtime_region :{bedrock_runtime_region}')
+    logger.info(f'bedrock_aksk_region    :{bedrock_aksk_region}')
+    logger.info(f'bedrock_secret_name    :{bedrock_secret_name}')
     logger.info('#' * 50)
 
     # 1.3 Parameter validation
@@ -118,8 +115,7 @@ def lambda_handler(event, context):
 
     # 5. Return the results
     return json.dumps({
-        'code': 200,
-        'message': 'success',
-        'data': answer
+        'Code': 200,
+        'Message': 'success',
+        'Data': answer
     })
-

@@ -32,7 +32,7 @@ class Claude2LLM():
     
 
     def _get_bedrock_aksk(self,
-                          secret_name='chatbot_bedrock',
+                          secret_name=os.environ.get('bedrock_secret_name', 'chatbot_bedrock'),
                           region_name=os.environ.get('bedrock_aksk_region', 'us-west-2')):
         session = boto3.session.Session()
         client = session.client(
