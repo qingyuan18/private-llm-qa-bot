@@ -52,13 +52,13 @@ aws ecr get-login-password --region $region | docker login --username AWS --pass
 
 aws ecr set-repository-policy \
     --repository-name "${func_image}" \
-    --policy-text "file://ecr-policy.json" \
+    --policy-text "file://deploy/ecr-policy.json" \
     --region ${region}
 
 # Build the docker image locally with the image name and then push it to ECR
 # with the full name.
 
-docker build -t ${func_image} -f Dockerfile . --platform=linux/amd64
+docker build -t ${func_image} -f deploy/Dockerfile . --platform=linux/amd64
 
 docker tag ${func_image} ${funcimage_fullname}
 

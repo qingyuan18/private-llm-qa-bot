@@ -106,7 +106,7 @@ def lambda_handler(event, context):
                      temperature=temperature,
                      top_p=top_p,
                      stop_sequences='')
-    llm.initial_llm(region=region,
+    llm.initial_llm(region=bedrock_runtime_region,
                     prompt_template=template.generate_template())
 
     # 4.2 Generate answers
