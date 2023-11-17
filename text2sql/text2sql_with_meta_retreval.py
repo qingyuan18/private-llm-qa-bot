@@ -278,6 +278,33 @@ def query_aos_knn_db_table(query,aos_endpoint,embedding_endpoint):
     return response
 
 
+prompt_template_v2 = """
+你是一个 MySQL BI 专家。
+根据如下<元数据>标签内的表、字段信息，写一个 SQL 回答业务问题。
+
+回答格式：
+SQL <<<
+(你写的SQL)
+<<<
+
+<元数据>
+{TABLE_INFO}
+</元数据>
+
+只能从<元数据>标签内的字段选择表字段，不能凭空生成表字段。
+如果需要查询的问题在<上下文>标签内有定义更明确的字段，则需要查询<上下文>标签内的全部字段。
+<上下文>
+{CONTEXT}
+</上下文>
+
+生成的SQL中要用'as'给出用反引号（‘)包围的中文别名。
+如无法生成 SQL，返回 ERROR。
+生成的SQL中字段名前面不要给出表名。
+
+问题：
+{QUESTION}
+"""
+
 prompt_template = """
 你是一个 MySQL BI 专家。
 根据提供给你的表和字段，写一个 SQL 回答业务问题。
@@ -309,14 +336,16 @@ def lambda_handler(event, context):
 
     database_name = db_tbl['database_name']
     table_name = db_tbl['table_name']
+    context = db_tbl['context']
 
     print('使用 SQLAlchemy 取回表的字段')
     table_info = get_table_info(database_name, table_name)
 
     print('组装提示语')
-    complete_prompt = prompt_template.format(
+    complete_prompt = prompt_template_v2.format(
         TABLE_INFO=table_info,
-        QUESTION=question
+        QUESTION=question,
+        CONTEXT=context
     )
     print(complete_prompt)
 
